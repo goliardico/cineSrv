@@ -1,14 +1,15 @@
 var mongoose = require('mongoose');
+var db = undefined; // connection handler
 
 var usersSchema = mongoose.Schema({
-   nome: String,
-   uuid: String
+   nome: { type: String, required: true, trim: true },
+   uuid: { type: String, required: true, trim: true }
 });
 
 var favsSchema = mongoose.Schema({
-	film: String,
-	cinema: String,
-	orario: String,
+	film: { type: String, required: true, trim: true },
+	cinema: { type: String, required: true, trim: true },
+	orario: { type: String, required: true, trim: true },
 	preferenze: Array
 });
 
@@ -20,8 +21,11 @@ function handleError(error) {
 // CRUD sulla rubrica dei nomi / uuid registrati
 function rubrica(callback, req, uuid, nome) {
 
-   mongoose.connect('mongodb://localhost/cinesrv');
-   var db = mongoose.connection;
+   console.log('mongoose connection state: ' + mongoose.connection.readyState);
+   if ( mongoose.connection.readyState == 0 ) {
+      mongoose.connect('mongodb://localhost/cinesrv');
+      db = mongoose.connection;
+   };
 
    // associa lo schema alla collection all'interno del database
    var usersModel = db.model('users', usersSchema);
@@ -29,31 +33,27 @@ function rubrica(callback, req, uuid, nome) {
    var users = new usersModel();
 
    db.on('error', console.error.bind(console, 'connection error:'));
-   db.once('open', function () {
-
+   
+   if ( mongoose.connection.readyState ) {
       switch (req) {
          case 'get':
-            console.log('[rubrica-get] search for: ' + uuid);
             usersModel.findOne({ 'uuid': uuid }, 'nome', function (err, result) {
                if (err) return handleError(err);
                console.log('[rubrica-get] nome: ' + result.nome);
-               db.close();
                callback(result.nome);
             });
          break;
          case 'put':
-            console.log('[rubrica-put] insert: ' + nome);
             users.nome = nome;
             users.uuid = uuid;
             users.save(function (err, users) {
                if (err) return handleError(err);
                console.log('[rubrica-put] salvato: ' + nome);
-               db.close();
                callback('ok');
             });
          break;
       };
-   });
+   };
 };
 
 exports.rubrica = rubrica;
