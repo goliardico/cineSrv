@@ -7,6 +7,12 @@ Use a MongoDB (nodejs.mongoose) to save user favorites and social features (TODO
 
 ## Installation
 
+### Node.js modules
+- express
+- mongoose
+- cheerio
+- request
+
 Run with:
 ```
 node app.js
