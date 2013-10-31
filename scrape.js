@@ -5,16 +5,14 @@ var cheerio = require ('cheerio');
 function trovaFilm(callback) {
 
 var url = 'http://trovacinema.repubblica.it/programmazione-cinema/citta/roma/rm/film';
+var films = new Array;
 
 request(url, function(err, resp, body) {
   if ( err || resp.statusCode != 200 ) {
-    console.log('Something goes wrong on GET resp: '+resp);
+    console.log('[trovafilm] Something goes wrong on GET remote: '+resp);
+    films = [0];
+  } else {
 
-    // problemi, torno a casa
-    callback(0);
-  }
-
-    var films = new Array;
     $ = cheerio.load(body);
 
   // L'elenco film e programmazione è costruito con il seguente schema:
@@ -48,9 +46,9 @@ request(url, function(err, resp, body) {
     if ( filmTemp.when.length > 0 )  // inserisco il film solo se ci sono sale
       films.push(filmTemp);
     });
-
-
-  callback(JSON.stringify(films, null, 4));
+  }
+  
+  callback(films);
 });
 
 // Json output:

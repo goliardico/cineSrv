@@ -10,7 +10,9 @@ var db = require('./db');
 // http://<server>:3000/trovafilm?jsoncallback=?
 app.get ('/trovafilm', function(req, res) {
    
-   app.set('jsonp callback name', req.query['jsoncallback']);
+   res.type('application/json');
+   app.set('jsonp callback name', 'jsoncallback');
+   console.log('GET received: ' + req.query['jsoncallback']);
    
    scrape.trovaFilm( function(data) {
 
