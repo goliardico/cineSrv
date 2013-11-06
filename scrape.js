@@ -31,16 +31,16 @@ request(url, function(err, resp, body) {
 
       var filmName = $(elem).find('.filmName'); // Titolo del film
       filmTemp.film = $(filmName).text();
-      // console.log('Titolo: ' + $(filmName).text());
       
       var when = $(elem).find('.resultLineFilm');
       $(when).each(function(i, cinema) {
-         var cineName = $(cinema).find('.cineName');  // nome della sala
+         var cineName = $(cinema).find('.cineName').text();  // nome della sala
+         cineName = capitalize(cineName.toLowerCase());
          var when = $(cinema).find('.res-hours');     // orario di programmazione
 
-         filmTemp.when.push({cine: $(cineName).text(), when: $(when).text()});
+         filmTemp.when.push({cine: cineName, when: $(when).text()});
     
-         //console.log('Sala: ' + $(cineName).text() + ' ' + $(when).text());
+         console.log('Sala: ' + cineName + ' ' + $(when).text());
       });
 
     if ( filmTemp.when.length > 0 )  // inserisco il film solo se ci sono sale
@@ -63,3 +63,8 @@ request(url, function(err, resp, body) {
 };
 
 exports.trovaFilm = trovaFilm;
+
+
+function capitalize(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+};
