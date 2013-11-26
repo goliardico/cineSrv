@@ -9,14 +9,14 @@ var db = require('./db');
 // La chiamata da jQuery a questo servizio deve essere ($.getJSON):
 // http://<server>:3000/trovafilm?jsoncallback=?
 app.get ('/trovafilm', function(req, res) {
-   
+
    res.type('application/json');
    app.set('jsonp callback name', 'jsoncallback');
    console.log('GET received: ' + req.query['jsoncallback']);
-   
+
    scrape.trovaFilm( function(data) {
 
-      // Deve tornare una stringa (Json), 
+      // Deve tornare una stringa (Json),
       // se torna un numero c'è stato un problema
       if ( data != 0  ) {
          // OK: restituisco la lista film in Json

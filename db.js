@@ -33,7 +33,7 @@ function rubrica(callback, req, uuid, nome) {
    var users = new usersModel();
 
    db.on('error', console.error.bind(console, 'connection error:'));
-   
+
    if ( mongoose.connection.readyState ) {
       switch (req) {
          case 'get':
