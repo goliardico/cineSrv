@@ -2,7 +2,7 @@
 
 Node.js + Express backend for cineApp android app.
 
-Scrape the web (with nodejs.cheerio) to find out movie times in italian theatres.
+It's scrape the web (with nodejs.cheerio) to find out movies in italian theatres, returns a jsonp with many information and schedules.
 Use a MongoDB (nodejs.mongoose) to save user favorites and social features (TODO)
 
 ## Installation
