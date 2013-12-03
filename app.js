@@ -12,13 +12,13 @@ app.get ('/trovafilm', function(req, res) {
 
    res.type('application/json');
    app.set('jsonp callback name', 'jsoncallback');
-   console.log('GET received: ' + req.query['jsoncallback']);
+   console.log('GET received: ' + req.query.jsoncallback);
 
    scrape.trovaFilm( function(data) {
 
       // Deve tornare una stringa (Json),
       // se torna un numero c'è stato un problema
-      if ( data != 0  ) {
+      if ( data !== 0  ) {
          // OK: restituisco la lista film in Json
          res.jsonp(200, data);
 
@@ -26,8 +26,18 @@ app.get ('/trovafilm', function(req, res) {
          // ERR: restituisco HTTP code 404
          res.jsonp(404, data);
 
-      };
+      }
    });
+});
+
+
+// restituisce i dettagli del film (id) passato come parametro
+// http://<server>:3000/film?id=?
+app.get ('/film', function(req, res) {
+
+   scrape.film( function(data) {
+      res.send(data);
+   }, 'get', req.query.id);
 });
 
 
@@ -38,7 +48,7 @@ app.get ('/trovafilm', function(req, res) {
 app.get ('/rubrica', function(req, res) {
    db.rubrica( function(nome) {
       res.send(nome);
-   }, 'get', req.query['uuid']);
+   }, 'get', req.query.uuid);
 });
 
 // Inserisce un nuovo nome in rubrica
@@ -50,7 +60,7 @@ app.get ('/rubrica', function(req, res) {
 app.put ('/rubrica', function(req, res) {
    db.rubrica( function(risultato) {
       res.send(risultato);
-   }, 'put', req.query['uuid'], req.query['nome']);
+   }, 'put', req.query.uuid, req.query.nome);
 });
 
 

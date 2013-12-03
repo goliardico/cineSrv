@@ -8,24 +8,22 @@ var usersSchema = mongoose.Schema({
 
 var favsSchema = mongoose.Schema({
 	film: { type: String, required: true, trim: true },
-	cinema: { type: String, required: true, trim: true },
-	orario: { type: String, required: true, trim: true },
 	preferenze: Array
 });
 
 function handleError(error) {
    console.log('Something wrong: ' + err);
    callback('error');
-};
+}
 
 // CRUD sulla rubrica dei nomi / uuid registrati
 function rubrica(callback, req, uuid, nome) {
 
    console.log('mongoose connection state: ' + mongoose.connection.readyState);
-   if ( mongoose.connection.readyState == 0 ) {
+   if ( mongoose.connection.readyState === 0 ) {
       mongoose.connect('mongodb://localhost/cinesrv');
       db = mongoose.connection;
-   };
+   }
 
    // associa lo schema alla collection all'interno del database
    var usersModel = db.model('users', usersSchema);
@@ -52,8 +50,8 @@ function rubrica(callback, req, uuid, nome) {
                callback('ok');
             });
          break;
-      };
-   };
-};
+      }
+   }
+}
 
 exports.rubrica = rubrica;

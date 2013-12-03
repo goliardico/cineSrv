@@ -11,12 +11,13 @@ var cheerio = require ('cheerio');
 // }
 function trovaFilm(callback) {
 
-var url = 'http://trovacinema.repubblica.it/programmazione-cinema/citta/roma/rm/film';
-var films = new Array;
+var baseUrl = 'http://trovacinema.repubblica.it';
+var url = baseUrl + '/programmazione-cinema/citta/roma/rm/film';
+var films = [];
 
   request(url, function(err, resp, body) {
     if ( err || resp.statusCode != 200 ) {
-      console.log('[trovafilm] Something goes wrong on GET remote: '+resp);
+      console.log('[trovafilm] Something goes wrong on GET remote: ' + resp);
       films = [0];
     } else {
 
@@ -33,13 +34,12 @@ var films = new Array;
     //                        <span class="res-hours">orari</span>
 
       $('.searchRes-group').each(function(i, elem) {
-        var filmTemp = new Object;
-        filmTemp.when = new Array;
+        var filmTemp = {};
+        filmTemp.when = [];
 
         var filmName = $(elem).find('.filmName');
         filmTemp.film = $(filmName).text();        // Titolo del film
         filmTemp.url = $(filmName).attr('href');   // Url con info
-        console.log('url: ' + filmTemp.url);
 
         var when = $(elem).find('.resultLineFilm');
         $(when).each(function(i, cinema) {
@@ -50,31 +50,44 @@ var films = new Array;
            filmTemp.when.push({cine: cineName, when: $(when).text()});
         });
 
-      if ( filmTemp.when.length > 0 )  // inserisco il film solo se ci sono sale
-        films.push(filmTemp);
-      });
+      if ( filmTemp.when.length > 0 ) {  // inserisco il film solo se ci sono sale
+          films.push(filmTemp);
+      }
+
+      }); // fine ciclo su ogni film presente
     }
 
-    var filmDetails = [];
-    filmDetails = downThemAll(films);
-
+    console.log('[trovaFilm] finito! films.lenght : ' + films.lenght);
     callback(films);
   });
-};
+}
 
 exports.trovaFilm = trovaFilm;
 
-function downThemAll(films) {
-  var details = [];
 
-  for (i = 0; i < films.length; i++) {
-    console.log('request: ' + films[i].url);
-  };
 
-  return details;
-};
+
+// scarica i dettagli di un film (regia, attori, anno)
+function film(url, callback) {
+
+  var details = '-';
+  request(url, function(err, resp, body) {
+    if ( err || resp.statusCode != 200 ) {
+      console.log('[trovafilm] Something goes wrong on GET remote: '+resp);
+    } else {
+      pageDetail = cheerio.load(body);
+      details = pageDetail('.tecInfo').text();
+    }
+
+    callback(details);
+  });
+
+}
+
+
+exports.film = film;
 
 
 function capitalize(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
-};
+}
