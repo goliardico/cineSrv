@@ -1,5 +1,7 @@
 var request = require ('request');
 var cheerio = require ('cheerio');
+var Iconv = require('iconv').Iconv;
+
 
 // Json output:
 // {
@@ -12,15 +14,24 @@ var cheerio = require ('cheerio');
 function trovaFilm(callback) {
 
 var baseUrl = 'http://trovacinema.repubblica.it';
-var url = baseUrl + '/programmazione-cinema/citta/roma/rm/film';
+var urlLink = baseUrl + '/programmazione-cinema/citta/roma/rm/film';
 var films = [];
 
-  request(url, function(err, resp, body) {
+var options = {
+    url: urlLink,
+    encoding: 'binary',
+};
+
+  request(options, function(err, resp, body) {
     if ( err || resp.statusCode != 200 ) {
       console.log('[trovafilm] Something goes wrong on GET remote: ' + resp);
       films = [0];
     } else {
 
+      body = new Buffer(body, 'binary');
+      var iconv = new Iconv('latin1', 'utf8');
+      // var iconv = new Iconv('latin1', 'ASCII//TRANSLIT//IGNORE');
+      body = iconv.convert(body).toString('utf8');
       $ = cheerio.load(body);
 
     // L'elenco film e programmazione è costruito con il seguente schema:
@@ -38,16 +49,35 @@ var films = [];
         filmTemp.when = [];
 
         var filmName = $(elem).find('.filmName');
-        filmTemp.film = $(filmName).text();        // Titolo del film
+        filmTemp.film = $(filmName).text(); // Titolo del film
+        filmTemp.vo = 0; // Film in lingua originale [0: no; 1: si]
+        filmTemp.amici = 0; // Film proiettati in cineclub [0: no; 1: si]
+	// console.log('film: ' + filmTemp.film);
         filmTemp.url = $(filmName).attr('href');   // Url con info
 
         var when = $(elem).find('.resultLineFilm');
         $(when).each(function(i, cinema) {
            var cineName = $(cinema).find('.cineName').text();  // nome della sala
            cineName = capitalize(cineName.toLowerCase());
-           var when = $(cinema).find('.res-hours');     // orario di programmazione
+           var when = $(cinema).find('.res-hours').text();     // orario di programmazione
 
-           filmTemp.when.push({cine: cineName, when: $(when).text()});
+           // Lingua originale
+           var vo = 0;
+           if ( when.indexOf('Lingua originale') > -1 ) {
+              vo = 1;
+              filmTemp.vo = 1;
+              when = when.replace('Lingua originale','').trim();
+           }
+
+           // Cineclub
+           var amici = 0;
+           if ( ( cineName.indexOf('Detour') > -1 ) || ( cineName.indexOf('Kino') > -1 ) ||
+                ( cineName.indexOf('Azzurro scipioni') > -1 ) ) {
+              amici = 1;
+              filmTemp.amici = 1;
+           }
+
+           filmTemp.when.push({cine: cineName, when: when, cineVo: vo, cineAmici: amici});
         });
 
       if ( filmTemp.when.length > 0 ) {  // inserisco il film solo se ci sono sale
@@ -57,7 +87,6 @@ var films = [];
       }); // fine ciclo su ogni film presente
     }
 
-    console.log('[trovaFilm] finito! films.lenght : ' + films.lenght);
     callback(films);
   });
 }
