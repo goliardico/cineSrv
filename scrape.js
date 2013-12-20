@@ -2,6 +2,7 @@ var request = require ('request');
 var cheerio = require ('cheerio');
 var Iconv = require('iconv').Iconv;
 
+var baseUrl = 'http://trovacinema.repubblica.it';
 
 // Json output:
 // {
@@ -13,7 +14,6 @@ var Iconv = require('iconv').Iconv;
 // }
 function trovaFilm(callback) {
 
-var baseUrl = 'http://trovacinema.repubblica.it';
 var urlLink = baseUrl + '/programmazione-cinema/citta/roma/rm/film';
 var films = [];
 
@@ -97,8 +97,9 @@ exports.trovaFilm = trovaFilm;
 
 
 // scarica i dettagli di un film (regia, attori, anno)
-function film(url, callback) {
+function film(callback, url) {
 
+  var urlLink = baseUrl + url;
   var details = '-';
   request(url, function(err, resp, body) {
     if ( err || resp.statusCode != 200 ) {
