@@ -72,7 +72,7 @@ var options = {
            // Cineclub
            var amici = 0;
            if ( ( cineName.indexOf('Detour') > -1 ) || ( cineName.indexOf('Kino') > -1 ) ||
-                ( cineName.indexOf('Azzurro scipioni') > -1 ) ) {
+                ( cineName.indexOf('Alphaville') > -1 ) ) {
               amici = 1;
               filmTemp.amici = 1;
            }
