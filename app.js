@@ -37,7 +37,7 @@ app.get ('/film', function(req, res) {
 
    scrape.film( function(data) {
       res.send(data);
-   }, 'get', req.query.id);
+   }, req.query.id);
 });
 
 

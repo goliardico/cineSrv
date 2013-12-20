@@ -99,11 +99,12 @@ exports.trovaFilm = trovaFilm;
 // scarica i dettagli di un film (regia, attori, anno)
 function film(callback, url) {
 
-  var urlLink = baseUrl + url;
+  var urlLink = baseUrl + '/' + url;
   var details = '-';
-  request(url, function(err, resp, body) {
+  request(urlLink, function(err, resp, body) {
+    console.log('[film] GET ' + urlLink);
     if ( err || resp.statusCode != 200 ) {
-      console.log('[trovafilm] Something goes wrong on GET remote: '+resp);
+      console.log('[film] Something goes wrong on GET remote: '+resp);
     } else {
       pageDetail = cheerio.load(body);
       details = pageDetail('.tecInfo').text();
