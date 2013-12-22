@@ -12,7 +12,7 @@ app.get ('/trovafilm', function(req, res) {
 
    res.type('application/json');
    app.set('jsonp callback name', 'jsoncallback');
-   console.log('GET received: ' + req.query.jsoncallback);
+   console.log('[trovafilm] GET: ' + req.query.jsoncallback);
 
    scrape.trovaFilm( function(data) {
 
@@ -31,12 +31,25 @@ app.get ('/trovafilm', function(req, res) {
 });
 
 
-// restituisce i dettagli del film (id) passato come parametro
+// restituisce i dettagli del film (id - una url) passato come parametro
+// In formato JSONP
 // http://<server>:3000/film?id=?
 app.get ('/film', function(req, res) {
 
+   res.type('application/json');
+   app.set('jsonp callback name', 'jsoncallback');
+   console.log('[app.film] GET: ' + req.query.jsoncallback);
+
    scrape.film( function(data) {
-      res.send(data);
+      if ( data !== 0  ) {
+         // OK: restituisco i dati in Jsonp
+         res.jsonp(200, data);
+
+      } else {
+         // ERR: restituisco HTTP code 404
+         res.jsonp(404, data);
+
+      }
    }, req.query.id);
 });
 

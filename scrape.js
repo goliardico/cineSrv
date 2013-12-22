@@ -4,14 +4,9 @@ var Iconv = require('iconv').Iconv;
 
 var baseUrl = 'http://trovacinema.repubblica.it';
 
-// Json output:
-// {
-//    "film": "string",
-//    "when": [
-//        {"cine": "string", "hour": "string"},
-//        {"cine": "string", "hour": "string"},
-//    ]
-// }
+
+// Restituisce (in JSONP), l'elenco dei film a Roma, la presenza di cineclub e versioni in
+// lingua originale
 function trovaFilm(callback) {
 
 var urlLink = baseUrl + '/programmazione-cinema/citta/roma/rm/film';
@@ -30,7 +25,7 @@ var options = {
 
       body = new Buffer(body, 'binary');
       var iconv = new Iconv('latin1', 'utf8');
-      // var iconv = new Iconv('latin1', 'ASCII//TRANSLIT//IGNORE');
+
       body = iconv.convert(body).toString('utf8');
       $ = cheerio.load(body);
 
@@ -52,7 +47,6 @@ var options = {
         filmTemp.film = $(filmName).text(); // Titolo del film
         filmTemp.vo = 0; // Film in lingua originale [0: no; 1: si]
         filmTemp.amici = 0; // Film proiettati in cineclub [0: no; 1: si]
-	// console.log('film: ' + filmTemp.film);
         filmTemp.url = $(filmName).attr('href');   // Url con info
 
         var when = $(elem).find('.resultLineFilm');
@@ -100,21 +94,28 @@ exports.trovaFilm = trovaFilm;
 function film(callback, url) {
 
   var urlLink = baseUrl + '/' + url;
-  var details = '-';
+  var details = {};
   request(urlLink, function(err, resp, body) {
-    console.log('[film] GET ' + urlLink);
     if ( err || resp.statusCode != 200 ) {
-      console.log('[film] Something goes wrong on GET remote: '+resp);
+      console.log('[scrape.film] Something goes wrong on GET remote: '+resp);
     } else {
+
+      body = new Buffer(body, 'binary');
+      var iconv = new Iconv('latin1', 'utf8');
+
+      body = iconv.convert(body).toString('utf8');
       pageDetail = cheerio.load(body);
-      details = pageDetail('.tecInfo').text();
+      var detailsDirty = pageDetail('.tecInfo').text();
+      detailsDirty = detailsDirty.replace(/\s\s/g, "");
+      detailsDirty = detailsDirty.replace(/Con:/, " Con: ");
+      detailsDirty = detailsDirty.replace(/Anno:/, " Anno: ");
+      details.all = detailsDirty.replace(/\r\n/g, "").trim();
     }
 
     callback(details);
   });
 
 }
-
 
 exports.film = film;
 
