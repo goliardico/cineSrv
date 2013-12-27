@@ -110,6 +110,23 @@ function film(callback, url) {
       detailsDirty = detailsDirty.replace(/Con:/, " Con: ");
       detailsDirty = detailsDirty.replace(/Anno:/, " Anno: ");
       details.all = detailsDirty.replace(/\r\n/g, "").trim();
+
+      // estrae:
+      //   - regia
+      //   - attori
+      //   - anno
+      var regRegia  = /Regia:\s(.+)\sCon:/;
+      var regAttori = /Con:\s(.+)\sAnno:/;
+      var regAnno   = /Anno:\s(\d+)/;
+
+      var regia  = regRegia.exec(details.all);
+      var attori = regAttori.exec(details.all);
+      var anno   = regAnno.exec(details.all);
+
+      // Could be NULL, check on frontend
+      details.regia  = regia[1];
+      details.attori = attori[1];
+      details.anno   = anno[1];
     }
 
     callback(details);
