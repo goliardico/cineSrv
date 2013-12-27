@@ -29,16 +29,6 @@ var options = {
       body = iconv.convert(body).toString('utf8');
       $ = cheerio.load(body);
 
-    // L'elenco film e programmazione è costruito con il seguente schema:
-    // <div class="searchRes-group">
-    //           <div class="labelSearchFilm">
-    //                  <a class="filmName" href="..">nome del film</a>
-    //           <div class="resultLineFilm">
-    //                  <div class="div-center">
-    //                        <p class="cineName">sala</p>
-    //                  <div class="div-right">
-    //                        <span class="res-hours">orari</span>
-
       $('.searchRes-group').each(function(i, elem) {
         var filmTemp = {};
         filmTemp.when = [];
@@ -124,9 +114,12 @@ function film(callback, url) {
       var anno   = regAnno.exec(details.all);
 
       // Could be NULL, check on frontend
-      details.regia  = regia[1];
-      details.attori = attori[1];
-      details.anno   = anno[1];
+      if ( regia !== null )
+        details.regia  = regia[1];
+      if ( attori !== null )
+        details.attori = attori[1];
+      if ( anno !== null )
+        details.anno   = anno[1];
     }
 
     callback(details);
