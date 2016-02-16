@@ -1,18 +1,22 @@
 var express = require ('express');
 var app = express();
+var bodyParser = require('body-parser');
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
+
+app.set('port', (process.env.PORT || 5000));
+
 
 var scrape = require('./scrape');
-var db = require('./db');
 
 // Produce il Json dei film in programmazione.
 // func: è generato dal client per proteggere dal CSS (vedi JSONP)
 // La chiamata da jQuery a questo servizio deve essere ($.getJSON):
 // http://<server>:3000/trovafilm?jsoncallback=?
-app.get ('/trovafilm', function(req, res) {
-
-   res.type('application/json');
-   app.set('jsonp callback name', 'jsoncallback');
-   console.log('[trovafilm] GET: ' + req.query.jsoncallback);
+app.get ('/all', function(req, res) {
 
    scrape.trovaFilm( function(data) {
 
@@ -20,11 +24,11 @@ app.get ('/trovafilm', function(req, res) {
       // se torna un numero c'è stato un problema
       if ( data !== 0  ) {
          // OK: restituisco la lista film in Json
-         res.jsonp(200, data);
+         res.status(200).jsonp(data);
 
       } else {
          // ERR: restituisco HTTP code 404
-         res.jsonp(404, data);
+         res.status(404).jsonp(data);
 
       }
    });
@@ -36,46 +40,20 @@ app.get ('/trovafilm', function(req, res) {
 // http://<server>:3000/film?id=?
 app.get ('/film', function(req, res) {
 
-   res.type('application/json');
-   app.set('jsonp callback name', 'jsoncallback');
-   console.log('[app.film] GET: ' + req.query.jsoncallback);
-
    scrape.film( function(data) {
       if ( data !== 0  ) {
          // OK: restituisco i dati in Jsonp
-         res.jsonp(200, data);
+         res.status(200).jsonp(data);
 
       } else {
          // ERR: restituisco HTTP code 404
-         res.jsonp(404, data);
+         res.status(404).jsonp(data);
 
       }
    }, req.query.id);
 });
 
 
-// Cerca all'interno del database l'esistenza di una precedente
-// registrazione per il telefono con uuid passato nella get
-// La richiesta dovrà essere:
-// http://<server>:3000/rubrica?uuid=?
-app.get ('/rubrica', function(req, res) {
-   db.rubrica( function(nome) {
-      res.send(nome);
-   }, 'get', req.query.uuid);
+app.listen(app.get('port'), function() {
+  console.log('Node app is running on port', app.get('port'));
 });
-
-// Inserisce un nuovo nome in rubrica
-// due parametri: nome e uuid
-// http://<server>:3000/rubrica?uuid=?&nome=?
-// restituisce:
-// ok : per inserimento corretto
-// nok: per errore
-app.put ('/rubrica', function(req, res) {
-   db.rubrica( function(risultato) {
-      res.send(risultato);
-   }, 'put', req.query.uuid, req.query.nome);
-});
-
-
-
-app.listen(3000);

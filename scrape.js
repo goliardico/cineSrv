@@ -19,7 +19,7 @@ var options = {
 
   request(options, function(err, resp, body) {
     if ( err || resp.statusCode != 200 ) {
-      console.log('[trovafilm] Something goes wrong on GET remote: ' + resp);
+      console.log('[trovafilm] Something goes wrong on GET remote: ' + JSON.stringify(resp));
       films = [0];
     } else {
 
@@ -87,7 +87,7 @@ function film(callback, url) {
   var details = {};
   request(urlLink, function(err, resp, body) {
     if ( err || resp.statusCode != 200 ) {
-      console.log('[scrape.film] Something goes wrong on GET remote: '+resp);
+      console.log('[scrape.film] Something goes wrong on GET remote: '+JSON.stringify(resp));
     } else {
 
       body = new Buffer(body, 'binary');

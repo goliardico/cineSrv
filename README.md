@@ -2,27 +2,38 @@
 
 Node.js + Express backend for cineApp android app.
 
-It's scrape the web (with nodejs.cheerio) to find out movies in italian theatres, returns a jsonp with many information and schedules.
+First release in December 2013, still works!
+Just a few fixes in February 2016 for migration process from Nodejitsu (dead) to Heroku
 
-Use a MongoDB (nodejs.mongoose) to save user favorites and social features (TODO)
+It's scrape the web (with Cheerio) to find movies in italian theatres, returns a jsonp with many information and schedules.
+
+
 
 ## Installation
 
-### Node.js modules
-- express
-- mongoose
-- cheerio
-- request
-- iconv
+Clone repository where do you want:
+
+```bash
+git clone https://github.com/goliardico/cineSrv.git
+```
+
+Then install all dependecies:
+
+```bash
+npm install
+````
 
 Run with:
-```
+```bash
 node app.js
 ```
 
 ## Usage
+Call:
 
-See app.js for web services exported
+* /all  - list all theatres
+* /film - get details about a single film
+
 
 ## Credits
 
