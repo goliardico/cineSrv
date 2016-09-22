@@ -7,7 +7,7 @@ Just a few fixes in February 2016 for migration process from Nodejitsu (dead) to
 
 It's scrape the web (with Cheerio) to find movies in italian theatres, returns a jsonp with many information and schedules.
 
-
+> IMPORTANT! When the scraped website changed its DOM this app stopped to work. I leave it here because it's was one of my first node.js app.
 
 ## Installation
 
